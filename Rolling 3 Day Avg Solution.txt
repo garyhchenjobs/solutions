@@ -1,0 +1,24 @@
+/* Using this dataset, show the SQL query to find the rolling 3 day average transaction amount for each day in January 2021. */
+
+
+--Uncomment to check for Duplicate Entries on the same day
+/*
+SELECT CAST("transaction_time" AS DATE), COUNT(*) FROM transactions GROUP BY 1 ORDER BY 1 
+*/
+
+--Pulling aggregate 3 Day Transacation Amt
+SELECT 
+	transaction_day, 
+	COALESCE("transation_amt_day",0.00) AS "transation_amt_day",
+	AVG(COALESCE("transation_amt_day",0.00)) OVER (ORDER BY "transaction_day" ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) AS "rolling_3_day_avg_amt"  
+FROM 
+	(SELECT CAST("transaction_time" AS DATE) AS transaction_day, SUM(COALESCE("transaction_amount",0.00)) AS "transation_amt_day" 
+		FROM transactions
+	GROUP BY 1
+ ) AS transactions_agg_day 
+	ORDER BY 1
+
+/*Refrence Links
+https://www.stratascratch.com/blog/the-ultimate-guide-to-sql-window-functions/
+https://learnsql.com/blog/rolling-average-in-sql/
+*/
