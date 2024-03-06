@@ -1,0 +1,1 @@
+SQL Partition sample
